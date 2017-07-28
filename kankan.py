@@ -1,0 +1,64 @@
+#! ./venv/bin/python3
+
+from importlib import import_module
+import traceback
+import sys
+
+# improve by using some dynamic solution offered e.g. here:
+# https://stackoverflow.com/questions/1057431/loading-all-modules-in-a-folder-in-python/20753073#20753073
+from checks import *
+
+def run_checks(conf):
+  errors = 0
+
+  tbs = []
+
+  try:
+    visualise_single_item_complex_fields_VF_7124.check(
+      conf["ws_base_url"],
+      publication="vf7124",
+      content_type="vf7124",
+      user="vf7124_admin",
+      password="admin"
+    )
+  except AssertionError:
+    _, _, tb = sys.exc_info()
+    tbs.append(tb)
+    errors += 1
+
+  try:
+    harden_upload_binary_with_illegal_home_section_VF_7160.check(
+      conf["ws_base_url"],
+      publication="rohan",
+      content_type="image",
+      user="rohan_admin",
+      password="admin"
+    )
+  except AssertionError:
+    errors += 1
+
+  ece_admin.check(conf["ece_admin_url"])
+  print_results(3, errors)
+
+  if len(tbs) > 0:
+    for tb in tbs:
+      traceback.print_tb(tb)
+
+
+def print_results(tests, errors):
+  print("Tests: " + str(tests) +
+        " Successes: " + str(tests - errors) +
+        " Errors: " + str(errors))
+
+
+def read_user_conf():
+  conf = {
+    "ece_admin_url": "http://localhost:8080/escenic-admin",
+    "ws_base_url": "http://localhost:8080/webservice"
+  }
+
+  return conf
+
+if __name__ == "__main__":
+  conf = read_user_conf()
+  run_checks(conf)
