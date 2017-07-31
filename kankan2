@@ -1,12 +1,12 @@
 #! ./venv/bin/python3
 
-from importlib import import_module
 import traceback
 import sys
 
 # improve by using some dynamic solution offered e.g. here:
 # https://stackoverflow.com/questions/1057431/loading-all-modules-in-a-folder-in-python/20753073#20753073
 from checks import *
+
 
 def run_checks(conf):
   errors = 0
@@ -46,9 +46,11 @@ def run_checks(conf):
 
 
 def print_results(tests, errors):
-  print("Tests: " + str(tests) +
-        " Successes: " + str(tests - errors) +
-        " Errors: " + str(errors))
+  print(
+    "Tests: " + str(tests) +
+    " Successes: " + str(tests - errors) +
+    " Errors: " + str(errors)
+  )
 
 
 def read_user_conf():
