@@ -14,6 +14,16 @@ def run_checks(conf):
   tbs = []
 
   try:
+    xhr_req_disables_www_auth_resp_VF_7159.check(
+      conf["ws_base_url"],
+      conf["publication"],
+      conf["user"])
+  except AssertionError:
+    _, _, tb = sys.exc_info()
+    tbs.append(tb)
+    errors += 1
+  
+  try:
     visualise_single_item_complex_fields_VF_7124.check(
       conf["ws_base_url"],
       publication="vf7124",
@@ -35,10 +45,18 @@ def run_checks(conf):
       password="admin"
     )
   except AssertionError:
+    _, _, tb = sys.exc_info()
+    tbs.append(tb)
+    errors += 1
+  except:
     errors += 1
 
-  ece_admin.check(conf["ece_admin_url"])
-  print_results(3, errors)
+  try:
+    ece_admin.check(conf["ece_admin_url"])
+  except AssertionError:
+    errors += 1
+
+  print_results(4, errors)
 
   if len(tbs) > 0:
     for tb in tbs:
@@ -56,7 +74,10 @@ def print_results(tests, errors):
 def read_user_conf():
   conf = {
     "ece_admin_url": "http://localhost:8080/escenic-admin",
-    "ws_base_url": "http://localhost:8080/webservice"
+    "ws_base_url": "http://localhost:8080/webservice",
+    "publication": "rohan",
+    "user": "rohan_admin",
+    "password": "admin"
   }
 
   return conf
