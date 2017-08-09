@@ -7,67 +7,40 @@ import sys
 # https://stackoverflow.com/questions/1057431/loading-all-modules-in-a-folder-in-python/20753073#20753073
 from checks import *
 
+checks = []
+tbs = []
+
+
+def run_check(check, conf):
+  global checks
+  checks.append(check)
+
+  try:
+    check(conf)
+  except AssertionError:
+    _, _, tb = sys.exc_info()
+    global tbs
+    tbs.append(tb)
+
 
 def run_checks(conf):
   errors = 0
 
-  tbs = []
+  run_check(area_teaser_options_placement_VF_7149.check, conf)
+  run_check(ece_admin.check, conf)
 
-  try:
-    xhr_req_disables_www_auth_resp_VF_7159.check(
-      conf["ws_base_url"],
-      conf["publication"],
-      conf["user"])
-  except AssertionError:
-    _, _, tb = sys.exc_info()
-    tbs.append(tb)
-    errors += 1
-  
-  try:
-    visualise_single_item_complex_fields_VF_7124.check(
-      conf["ws_base_url"],
-      publication="vf7124",
-      content_type="vf7124",
-      user="vf7124_admin",
-      password="admin"
-    )
-  except AssertionError:
-    _, _, tb = sys.exc_info()
-    tbs.append(tb)
-    errors += 1
-
-  try:
-    harden_upload_binary_with_illegal_home_section_VF_7160.check(
-      conf["ws_base_url"],
-      publication="rohan",
-      content_type="image",
-      user="rohan_admin",
-      password="admin"
-    )
-  except AssertionError:
-    _, _, tb = sys.exc_info()
-    tbs.append(tb)
-    errors += 1
-  except:
-    errors += 1
-
-  try:
-    ece_admin.check(conf["ece_admin_url"])
-  except AssertionError:
-    errors += 1
-
-  print_results(4, errors)
+  print_results(checks, tbs)
 
   if len(tbs) > 0:
     for tb in tbs:
       traceback.print_tb(tb)
 
 
-def print_results(tests, errors):
+def print_results(checks, tbs):
   print(
-    "Tests: " + str(tests) +
-    " Successes: " + str(tests - errors) +
-    " Errors: " + str(errors)
+    "Tests: " + str(len(checks)) +
+    " Successes: " + str(len(checks) - len(tbs)) +
+    " Errors: " + str(len(tbs))
   )
 
 
