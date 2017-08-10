@@ -26,8 +26,9 @@ def run_check(check, conf):
 def run_checks(conf):
   errors = 0
 
-  run_check(area_teaser_options_placement_VF_7149.check, conf)
+  # run_check(area_teaser_options_placement_VF_7149.check, conf)
   run_check(ece_admin.check, conf)
+  run_check(changing_sub_section_list_should_update_section_etag_VF_7170.check, conf)
 
   print_results(checks, tbs)
 
