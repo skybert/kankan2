@@ -57,14 +57,7 @@ def check(conf):
   response = requests.get(section_uri, auth=auth)
   etag_before = response.headers["ETag"]
 
-  doc = etree.parse(StringIO(response.text))
-  r = doc.xpath(
-    "/atom:entry" +
-    "/atom:link[@rel='down']",
-    namespaces=ece.xml_namespaces)
-  assert len(r) == 1
-  assert r[0].get("href") is not ""
-  sub_section_uri = r[0].get("href")
+  sub_section_uri = ece.get_sub_section_uri(response.text)
 
   model_uri = ws_base_url + \
       "/escenic/publication/" + publication + \
